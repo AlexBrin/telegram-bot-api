@@ -51,6 +51,10 @@ type Update struct {
 	//
 	// optional
 	EditedMessage *Message `json:"edited_message,omitempty"`
+	// MessageReaction is reactions to messages with emojies.
+	//
+	// optional
+	MessageReaction *MessageReaction `json:"message_reaction,omitempty"`
 	// ChannelPost new version of a message that is known to the bot and was
 	// edited
 	//
@@ -361,6 +365,14 @@ func (c Chat) ChatConfig() ChatConfig {
 type Message struct {
 	// MessageID is a unique message identifier inside this chat
 	MessageID int `json:"message_id"`
+	// MessageThreadID is a unique identifier of a message thread to which the message belongs; for supergroups only
+	//
+	// optional
+	MessageThreadID int `json:"message_thread_id,omitempty"`
+	// IsTopicMessage if true, the message was sent to the topic
+	//
+	// optional
+	IsTopicMessage bool `json:"is_topic_message,omitempty"`
 	// From is a sender, empty for messages sent to channels;
 	//
 	// optional
@@ -812,6 +824,36 @@ func (e MessageEntity) IsPre() bool {
 // IsTextLink returns true if the type of the message entity is "text_link" (clickable text URL).
 func (e MessageEntity) IsTextLink() bool {
 	return e.Type == "text_link"
+}
+
+// MessageReaction represents reactions update.
+type MessageReaction struct {
+	// MessageID is a unique message identifier inside this chat
+	MessageID int `json:"message_id"`
+	// Chat is the conversation the message belongs to
+	Chat *Chat `json:"chat"`
+	// User that updated reaction
+	User *User `json:"User"`
+	// Date of the reacion was updated in Unix time
+	Date int `json:"date"`
+	// Old slice of reactions
+	OldReaction []Reaction `json:"old_reaction"`
+	// New slice of reactions
+	NewReaction []Reaction `json:"new_reaction"`
+}
+
+// Reaction represents reaction entity.
+type Reaction struct {
+	// Emoji type: emoji or custom_emoji
+	Type string `json:"type"`
+	// Emoji associated with the sticker
+	//
+	// optional
+	Emoji string `json:"emoji,omitempty"`
+	// CustomEmojiID for custom emoji stickers, unique identifier of the custom emoji
+	//
+	// optional
+	CustomEmojiID string `json:"custom_emoji_id,omitempty"`
 }
 
 // PhotoSize represents one size of a photo or a file / sticker thumbnail.

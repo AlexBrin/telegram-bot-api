@@ -54,6 +54,9 @@ const (
 	// UpdateTypeEditedMessage is new version of a message that is known to the bot and was edited
 	UpdateTypeEditedMessage = "edited_message"
 
+	// UpdateTypeMessageReaction is new incoming updates of reactions
+	UpdateTypeMessageReaction = "message_reaction"
+
 	// UpdateTypeChannelPost is new incoming channel post of any kind — text, photo, sticker, etc.
 	UpdateTypeChannelPost = "channel_post"
 

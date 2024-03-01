@@ -10,7 +10,7 @@ approaches to solve common problems.
 ## Installing
 
 ```bash
-go get -u github.com/go-telegram-bot-api/telegram-bot-api/v5
+go get -u github.com/AlexBrin/telegram-bot-api/v5
 ```
 
 ## A Simple Bot
@@ -22,7 +22,7 @@ messages repeating what you said. Make sure you get an API token from
 Let's start by constructing a new [BotAPI][bot-api-docs].
 
 [botfather]: https://t.me/Botfather
-[bot-api-docs]: https://pkg.go.dev/github.com/go-telegram-bot-api/telegram-bot-api/v5?tab=doc#BotAPI
+[bot-api-docs]: https://pkg.go.dev/github.com/AlexBrin/telegram-bot-api/v5?tab=doc#BotAPI
 
 ```go
 package main
@@ -30,7 +30,7 @@ package main
 import (
 	"os"
 
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	tgbotapi "github.com/AlexBrin/telegram-bot-api/v5"
 )
 
 func main() {
@@ -94,7 +94,7 @@ things. We can add this code in right after the line enabling debug mode.
 
 		// Okay, we're sending our message off! We don't care about the message
 		// we just sent, so we'll discard it.
-		if _, err := bot.Send(msg); err != nil {
+		if _, err = bot.Send(msg); err != nil {
 			// Note that panics are a bad way to handle errors. Telegram can
 			// have service outages or network errors, you should retry sending
 			// messages or more gracefully handle failures.

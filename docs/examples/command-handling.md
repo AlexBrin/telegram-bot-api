@@ -9,7 +9,7 @@ import (
 	"log"
 	"os"
 
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	tgbotapi "github.com/AlexBrin/telegram-bot-api/v5"
 )
 
 func main() {
@@ -52,7 +52,7 @@ func main() {
 			msg.Text = "I don't know that command"
 		}
 
-		if _, err := bot.Send(msg); err != nil {
+		if _, err = bot.Send(msg); err != nil {
 			log.Panic(err)
 		}
 	}

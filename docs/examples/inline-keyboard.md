@@ -11,7 +11,7 @@ import (
 	"log"
 	"os"
 
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	tgbotapi "github.com/AlexBrin/telegram-bot-api/v5"
 )
 
 var numericKeyboard = tgbotapi.NewInlineKeyboardMarkup(
@@ -71,7 +71,7 @@ func main() {
 
 			// And finally, send a message containing the data received.
 			msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, update.CallbackQuery.Data)
-			if _, err := bot.Send(msg); err != nil {
+			if _, err = bot.Send(msg); err != nil {
 				panic(err)
 			}
 		}

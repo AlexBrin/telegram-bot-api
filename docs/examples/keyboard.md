@@ -10,7 +10,7 @@ import (
 	"log"
 	"os"
 
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	tgbotapi "github.com/AlexBrin/telegram-bot-api/v5"
 )
 
 var numericKeyboard = tgbotapi.NewReplyKeyboard(
@@ -55,7 +55,7 @@ func main() {
 			msg.ReplyMarkup = tgbotapi.NewRemoveKeyboard(true)
 		}
 
-		if _, err := bot.Send(msg); err != nil {
+		if _, err = bot.Send(msg); err != nil {
 			log.Panic(err)
 		}
 	}

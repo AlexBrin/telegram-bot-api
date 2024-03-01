@@ -36,14 +36,16 @@ func (t testLogger) Printf(format string, v ...interface{}) {
 
 func getBot(t *testing.T) (*BotAPI, error) {
 	bot, err := NewBotAPI(TestToken)
+
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
+
 	bot.Debug = true
 
 	logger := testLogger{t}
 	SetLogger(logger)
-
-	if err != nil {
-		t.Error(err)
-	}
 
 	return bot, err
 }
@@ -57,11 +59,16 @@ func TestNewBotAPI_notoken(t *testing.T) {
 }
 
 func TestGetUpdates(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
+
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
 
 	u := NewUpdate(0)
 
-	_, err := bot.GetUpdates(u)
+	_, err = bot.GetUpdates(u)
 
 	if err != nil {
 		t.Error(err)
@@ -69,11 +76,16 @@ func TestGetUpdates(t *testing.T) {
 }
 
 func TestSendWithMessage(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
+
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
 
 	msg := NewMessage(ChatID, "A test message from the test library in telegram-bot-api")
 	msg.ParseMode = ModeMarkdown
-	_, err := bot.Send(msg)
+	_, err = bot.Send(msg)
 
 	if err != nil {
 		t.Error(err)
@@ -81,11 +93,16 @@ func TestSendWithMessage(t *testing.T) {
 }
 
 func TestSendWithMessageReply(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
+
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
 
 	msg := NewMessage(ChatID, "A test message from the test library in telegram-bot-api")
 	msg.ReplyToMessageID = ReplyToMessageID
-	_, err := bot.Send(msg)
+	_, err = bot.Send(msg)
 
 	if err != nil {
 		t.Error(err)
@@ -93,10 +110,15 @@ func TestSendWithMessageReply(t *testing.T) {
 }
 
 func TestSendWithMessageForward(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
+
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
 
 	msg := NewForward(ChatID, ChatID, ReplyToMessageID)
-	_, err := bot.Send(msg)
+	_, err = bot.Send(msg)
 
 	if err != nil {
 		t.Error(err)
@@ -104,7 +126,12 @@ func TestSendWithMessageForward(t *testing.T) {
 }
 
 func TestCopyMessage(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
+
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
 
 	msg := NewMessage(ChatID, "A test message from the test library in telegram-bot-api")
 	message, err := bot.Send(msg)
@@ -124,11 +151,16 @@ func TestCopyMessage(t *testing.T) {
 }
 
 func TestSendWithNewPhoto(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
+
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
 
 	msg := NewPhoto(ChatID, FilePath("tests/image.jpg"))
 	msg.Caption = "Test"
-	_, err := bot.Send(msg)
+	_, err = bot.Send(msg)
 
 	if err != nil {
 		t.Error(err)
@@ -136,14 +168,19 @@ func TestSendWithNewPhoto(t *testing.T) {
 }
 
 func TestSendWithNewPhotoWithFileBytes(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
+
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
 
 	data, _ := os.ReadFile("tests/image.jpg")
 	b := FileBytes{Name: "image.jpg", Bytes: data}
 
 	msg := NewPhoto(ChatID, b)
 	msg.Caption = "Test"
-	_, err := bot.Send(msg)
+	_, err = bot.Send(msg)
 
 	if err != nil {
 		t.Error(err)
@@ -151,14 +188,19 @@ func TestSendWithNewPhotoWithFileBytes(t *testing.T) {
 }
 
 func TestSendWithNewPhotoWithFileReader(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
+
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
 
 	f, _ := os.Open("tests/image.jpg")
 	reader := FileReader{Name: "image.jpg", Reader: f}
 
 	msg := NewPhoto(ChatID, reader)
 	msg.Caption = "Test"
-	_, err := bot.Send(msg)
+	_, err = bot.Send(msg)
 
 	if err != nil {
 		t.Error(err)
@@ -166,12 +208,17 @@ func TestSendWithNewPhotoWithFileReader(t *testing.T) {
 }
 
 func TestSendWithNewPhotoReply(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
+
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
 
 	msg := NewPhoto(ChatID, FilePath("tests/image.jpg"))
 	msg.ReplyToMessageID = ReplyToMessageID
 
-	_, err := bot.Send(msg)
+	_, err = bot.Send(msg)
 
 	if err != nil {
 		t.Error(err)
@@ -179,11 +226,16 @@ func TestSendWithNewPhotoReply(t *testing.T) {
 }
 
 func TestSendNewPhotoToChannel(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
+
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
 
 	msg := NewPhotoToChannel(Channel, FilePath("tests/image.jpg"))
 	msg.Caption = "Test"
-	_, err := bot.Send(msg)
+	_, err = bot.Send(msg)
 
 	if err != nil {
 		t.Error(err)
@@ -192,14 +244,19 @@ func TestSendNewPhotoToChannel(t *testing.T) {
 }
 
 func TestSendNewPhotoToChannelFileBytes(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
+
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
 
 	data, _ := os.ReadFile("tests/image.jpg")
 	b := FileBytes{Name: "image.jpg", Bytes: data}
 
 	msg := NewPhotoToChannel(Channel, b)
 	msg.Caption = "Test"
-	_, err := bot.Send(msg)
+	_, err = bot.Send(msg)
 
 	if err != nil {
 		t.Error(err)
@@ -208,14 +265,19 @@ func TestSendNewPhotoToChannelFileBytes(t *testing.T) {
 }
 
 func TestSendNewPhotoToChannelFileReader(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
+
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
 
 	f, _ := os.Open("tests/image.jpg")
 	reader := FileReader{Name: "image.jpg", Reader: f}
 
 	msg := NewPhotoToChannel(Channel, reader)
 	msg.Caption = "Test"
-	_, err := bot.Send(msg)
+	_, err = bot.Send(msg)
 
 	if err != nil {
 		t.Error(err)
@@ -224,11 +286,16 @@ func TestSendNewPhotoToChannelFileReader(t *testing.T) {
 }
 
 func TestSendWithExistingPhoto(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
+
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
 
 	msg := NewPhoto(ChatID, FileID(ExistingPhotoFileID))
 	msg.Caption = "Test"
-	_, err := bot.Send(msg)
+	_, err = bot.Send(msg)
 
 	if err != nil {
 		t.Error(err)
@@ -236,10 +303,15 @@ func TestSendWithExistingPhoto(t *testing.T) {
 }
 
 func TestSendWithNewDocument(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
+
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
 
 	msg := NewDocument(ChatID, FilePath("tests/image.jpg"))
-	_, err := bot.Send(msg)
+	_, err = bot.Send(msg)
 
 	if err != nil {
 		t.Error(err)
@@ -247,11 +319,16 @@ func TestSendWithNewDocument(t *testing.T) {
 }
 
 func TestSendWithNewDocumentAndThumb(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
+
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
 
 	msg := NewDocument(ChatID, FilePath("tests/voice.ogg"))
 	msg.Thumb = FilePath("tests/image.jpg")
-	_, err := bot.Send(msg)
+	_, err = bot.Send(msg)
 
 	if err != nil {
 		t.Error(err)
@@ -259,10 +336,15 @@ func TestSendWithNewDocumentAndThumb(t *testing.T) {
 }
 
 func TestSendWithExistingDocument(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
+
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
 
 	msg := NewDocument(ChatID, FileID(ExistingDocumentFileID))
-	_, err := bot.Send(msg)
+	_, err = bot.Send(msg)
 
 	if err != nil {
 		t.Error(err)
@@ -270,13 +352,18 @@ func TestSendWithExistingDocument(t *testing.T) {
 }
 
 func TestSendWithNewAudio(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
+
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
 
 	msg := NewAudio(ChatID, FilePath("tests/audio.mp3"))
 	msg.Title = "TEST"
 	msg.Duration = 10
 	msg.Performer = "TEST"
-	_, err := bot.Send(msg)
+	_, err = bot.Send(msg)
 
 	if err != nil {
 		t.Error(err)
@@ -284,14 +371,19 @@ func TestSendWithNewAudio(t *testing.T) {
 }
 
 func TestSendWithExistingAudio(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
+
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
 
 	msg := NewAudio(ChatID, FileID(ExistingAudioFileID))
 	msg.Title = "TEST"
 	msg.Duration = 10
 	msg.Performer = "TEST"
 
-	_, err := bot.Send(msg)
+	_, err = bot.Send(msg)
 
 	if err != nil {
 		t.Error(err)
@@ -299,11 +391,16 @@ func TestSendWithExistingAudio(t *testing.T) {
 }
 
 func TestSendWithNewVoice(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
+
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
 
 	msg := NewVoice(ChatID, FilePath("tests/voice.ogg"))
 	msg.Duration = 10
-	_, err := bot.Send(msg)
+	_, err = bot.Send(msg)
 
 	if err != nil {
 		t.Error(err)
@@ -311,11 +408,16 @@ func TestSendWithNewVoice(t *testing.T) {
 }
 
 func TestSendWithExistingVoice(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
+
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
 
 	msg := NewVoice(ChatID, FileID(ExistingVoiceFileID))
 	msg.Duration = 10
-	_, err := bot.Send(msg)
+	_, err = bot.Send(msg)
 
 	if err != nil {
 		t.Error(err)
@@ -323,19 +425,29 @@ func TestSendWithExistingVoice(t *testing.T) {
 }
 
 func TestSendWithContact(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
+
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
 
 	contact := NewContact(ChatID, "5551234567", "Test")
 
-	if _, err := bot.Send(contact); err != nil {
+	if _, err = bot.Send(contact); err != nil {
 		t.Error(err)
 	}
 }
 
 func TestSendWithLocation(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
 
-	_, err := bot.Send(NewLocation(ChatID, 40, 40))
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
+
+	_, err = bot.Send(NewLocation(ChatID, 40, 40))
 
 	if err != nil {
 		t.Error(err)
@@ -343,23 +455,33 @@ func TestSendWithLocation(t *testing.T) {
 }
 
 func TestSendWithVenue(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
+
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
 
 	venue := NewVenue(ChatID, "A Test Location", "123 Test Street", 40, 40)
 
-	if _, err := bot.Send(venue); err != nil {
+	if _, err = bot.Send(venue); err != nil {
 		t.Error(err)
 	}
 }
 
 func TestSendWithNewVideo(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
+
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
 
 	msg := NewVideo(ChatID, FilePath("tests/video.mp4"))
 	msg.Duration = 10
 	msg.Caption = "TEST"
 
-	_, err := bot.Send(msg)
+	_, err = bot.Send(msg)
 
 	if err != nil {
 		t.Error(err)
@@ -367,13 +489,18 @@ func TestSendWithNewVideo(t *testing.T) {
 }
 
 func TestSendWithExistingVideo(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
+
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
 
 	msg := NewVideo(ChatID, FileID(ExistingVideoFileID))
 	msg.Duration = 10
 	msg.Caption = "TEST"
 
-	_, err := bot.Send(msg)
+	_, err = bot.Send(msg)
 
 	if err != nil {
 		t.Error(err)
@@ -381,12 +508,17 @@ func TestSendWithExistingVideo(t *testing.T) {
 }
 
 func TestSendWithNewVideoNote(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
+
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
 
 	msg := NewVideoNote(ChatID, 240, FilePath("tests/videonote.mp4"))
 	msg.Duration = 10
 
-	_, err := bot.Send(msg)
+	_, err = bot.Send(msg)
 
 	if err != nil {
 		t.Error(err)
@@ -394,12 +526,17 @@ func TestSendWithNewVideoNote(t *testing.T) {
 }
 
 func TestSendWithExistingVideoNote(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
+
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
 
 	msg := NewVideoNote(ChatID, 240, FileID(ExistingVideoNoteFileID))
 	msg.Duration = 10
 
-	_, err := bot.Send(msg)
+	_, err = bot.Send(msg)
 
 	if err != nil {
 		t.Error(err)
@@ -407,11 +544,16 @@ func TestSendWithExistingVideoNote(t *testing.T) {
 }
 
 func TestSendWithNewSticker(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
+
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
 
 	msg := NewSticker(ChatID, FilePath("tests/image.jpg"))
 
-	_, err := bot.Send(msg)
+	_, err = bot.Send(msg)
 
 	if err != nil {
 		t.Error(err)
@@ -419,11 +561,16 @@ func TestSendWithNewSticker(t *testing.T) {
 }
 
 func TestSendWithExistingSticker(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
+
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
 
 	msg := NewSticker(ChatID, FileID(ExistingStickerFileID))
 
-	_, err := bot.Send(msg)
+	_, err = bot.Send(msg)
 
 	if err != nil {
 		t.Error(err)
@@ -431,14 +578,19 @@ func TestSendWithExistingSticker(t *testing.T) {
 }
 
 func TestSendWithNewStickerAndKeyboardHide(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
+
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
 
 	msg := NewSticker(ChatID, FilePath("tests/image.jpg"))
 	msg.ReplyMarkup = ReplyKeyboardRemove{
 		RemoveKeyboard: true,
 		Selective:      false,
 	}
-	_, err := bot.Send(msg)
+	_, err = bot.Send(msg)
 
 	if err != nil {
 		t.Error(err)
@@ -446,7 +598,12 @@ func TestSendWithNewStickerAndKeyboardHide(t *testing.T) {
 }
 
 func TestSendWithExistingStickerAndKeyboardHide(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
+
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
 
 	msg := NewSticker(ChatID, FileID(ExistingStickerFileID))
 	msg.ReplyMarkup = ReplyKeyboardRemove{
@@ -454,7 +611,7 @@ func TestSendWithExistingStickerAndKeyboardHide(t *testing.T) {
 		Selective:      false,
 	}
 
-	_, err := bot.Send(msg)
+	_, err = bot.Send(msg)
 
 	if err != nil {
 		t.Error(err)
@@ -462,10 +619,15 @@ func TestSendWithExistingStickerAndKeyboardHide(t *testing.T) {
 }
 
 func TestSendWithDice(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
+
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
 
 	msg := NewDice(ChatID)
-	_, err := bot.Send(msg)
+	_, err = bot.Send(msg)
 
 	if err != nil {
 		t.Error(err)
@@ -475,10 +637,15 @@ func TestSendWithDice(t *testing.T) {
 }
 
 func TestSendWithDiceWithEmoji(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
+
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
 
 	msg := NewDiceWithEmoji(ChatID, "🏀")
-	_, err := bot.Send(msg)
+	_, err = bot.Send(msg)
 
 	if err != nil {
 		t.Error(err)
@@ -488,13 +655,18 @@ func TestSendWithDiceWithEmoji(t *testing.T) {
 }
 
 func TestGetFile(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
+
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
 
 	file := FileConfig{
 		FileID: ExistingPhotoFileID,
 	}
 
-	_, err := bot.GetFile(file)
+	_, err = bot.GetFile(file)
 
 	if err != nil {
 		t.Error(err)
@@ -502,9 +674,14 @@ func TestGetFile(t *testing.T) {
 }
 
 func TestSendChatConfig(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
 
-	_, err := bot.Request(NewChatAction(ChatID, ChatTyping))
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
+
+	_, err = bot.Request(NewChatAction(ChatID, ChatTyping))
 
 	if err != nil {
 		t.Error(err)
@@ -535,16 +712,26 @@ func TestSendChatConfig(t *testing.T) {
 // }
 
 func TestGetUserProfilePhotos(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
 
-	_, err := bot.GetUserProfilePhotos(NewUserProfilePhotos(ChatID))
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
+
+	_, err = bot.GetUserProfilePhotos(NewUserProfilePhotos(ChatID))
 	if err != nil {
 		t.Error(err)
 	}
 }
 
 func TestSetWebhookWithCert(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
+
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
 
 	time.Sleep(time.Second * 2)
 
@@ -571,7 +758,12 @@ func TestSetWebhookWithCert(t *testing.T) {
 }
 
 func TestSetWebhookWithoutCert(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
+
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
 
 	time.Sleep(time.Second * 2)
 
@@ -605,10 +797,15 @@ func TestSetWebhookWithoutCert(t *testing.T) {
 }
 
 func TestSendWithMediaGroupPhotoVideo(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
+
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
 
 	cfg := NewMediaGroup(ChatID, []interface{}{
-		NewInputMediaPhoto(FileURL("https://github.com/go-telegram-bot-api/telegram-bot-api/raw/0a3a1c8716c4cd8d26a262af9f12dcbab7f3f28c/tests/image.jpg")),
+		NewInputMediaPhoto(FileURL("https://github.com/AlexBrin/telegram-bot-api/raw/0a3a1c8716c4cd8d26a262af9f12dcbab7f3f28c/tests/image.jpg")),
 		NewInputMediaPhoto(FilePath("tests/image.jpg")),
 		NewInputMediaVideo(FilePath("tests/video.mp4")),
 	})
@@ -628,7 +825,12 @@ func TestSendWithMediaGroupPhotoVideo(t *testing.T) {
 }
 
 func TestSendWithMediaGroupDocument(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
+
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
 
 	cfg := NewMediaGroup(ChatID, []interface{}{
 		NewInputMediaDocument(FileURL("https://i.imgur.com/unQLJIb.jpg")),
@@ -650,7 +852,12 @@ func TestSendWithMediaGroupDocument(t *testing.T) {
 }
 
 func TestSendWithMediaGroupAudio(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
+
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
 
 	cfg := NewMediaGroup(ChatID, []interface{}{
 		NewInputMediaAudio(FilePath("tests/audio.mp3")),
@@ -820,7 +1027,12 @@ func ExampleInlineConfig() {
 }
 
 func TestDeleteMessage(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
+
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
 
 	msg := NewMessage(ChatID, "A test message from the test library in telegram-bot-api")
 	msg.ParseMode = ModeMarkdown
@@ -830,7 +1042,7 @@ func TestDeleteMessage(t *testing.T) {
 		ChatID:    message.Chat.ID,
 		MessageID: message.MessageID,
 	}
-	_, err := bot.Request(deleteMessageConfig)
+	_, err = bot.Request(deleteMessageConfig)
 
 	if err != nil {
 		t.Error(err)
@@ -838,7 +1050,12 @@ func TestDeleteMessage(t *testing.T) {
 }
 
 func TestPinChatMessage(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
+
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
 
 	msg := NewMessage(SupergroupChatID, "A test message from the test library in telegram-bot-api")
 	msg.ParseMode = ModeMarkdown
@@ -849,7 +1066,7 @@ func TestPinChatMessage(t *testing.T) {
 		MessageID:           message.MessageID,
 		DisableNotification: false,
 	}
-	_, err := bot.Request(pinChatMessageConfig)
+	_, err = bot.Request(pinChatMessageConfig)
 
 	if err != nil {
 		t.Error(err)
@@ -857,7 +1074,12 @@ func TestPinChatMessage(t *testing.T) {
 }
 
 func TestUnpinChatMessage(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
+
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
 
 	msg := NewMessage(SupergroupChatID, "A test message from the test library in telegram-bot-api")
 	msg.ParseMode = ModeMarkdown
@@ -885,7 +1107,12 @@ func TestUnpinChatMessage(t *testing.T) {
 }
 
 func TestUnpinAllChatMessages(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
+
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
 
 	msg := NewMessage(SupergroupChatID, "A test message from the test library in telegram-bot-api")
 	msg.ParseMode = ModeMarkdown
@@ -911,7 +1138,12 @@ func TestUnpinAllChatMessages(t *testing.T) {
 }
 
 func TestPolls(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
+
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
 
 	poll := NewPoll(SupergroupChatID, "Are polls working?", "Yes", "No")
 
@@ -939,7 +1171,12 @@ func TestPolls(t *testing.T) {
 }
 
 func TestSendDice(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
+
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
 
 	dice := NewDice(ChatID)
 
@@ -954,7 +1191,12 @@ func TestSendDice(t *testing.T) {
 }
 
 func TestCommands(t *testing.T) {
-	bot, _ := getBot(t)
+	bot, err := getBot(t)
+
+	if err != nil {
+		t.Errorf("cannot get bot instance: %v", err)
+		t.FailNow()
+	}
 
 	setCommands := NewSetMyCommands(BotCommand{
 		Command:     "test",

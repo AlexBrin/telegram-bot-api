@@ -2,6 +2,7 @@ package tgbotapi
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/url"
@@ -1780,17 +1781,22 @@ func (config InvoiceConfig) params() (Params, error) {
 		return params, err
 	}
 
+	tips, err := json.Marshal(config.SuggestedTipAmounts)
+	if err != nil {
+		return params, err
+	}
+
 	params["title"] = config.Title
 	params["description"] = config.Description
 	params["payload"] = config.Payload
 	params["currency"] = config.Currency
+	params["suggested_tip_amounts"] = string(tips)
 	if err = params.AddInterface("prices", config.Prices); err != nil {
 		return params, err
 	}
 
 	params.AddNonEmpty("provider_token", config.ProviderToken)
 	params.AddNonZero("max_tip_amount", config.MaxTipAmount)
-	err = params.AddInterface("suggested_tip_amounts", config.SuggestedTipAmounts)
 	params.AddNonEmpty("start_parameter", config.StartParameter)
 	params.AddNonEmpty("provider_data", config.ProviderData)
 	params.AddNonEmpty("photo_url", config.PhotoURL)

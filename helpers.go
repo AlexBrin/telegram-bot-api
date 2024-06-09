@@ -65,9 +65,11 @@ func NewForward(chatID int64, fromChatID int64, messageID int) ForwardConfig {
 // and messageID is the ID of the original message.
 func NewCopyMessage(chatID int64, fromChatID int64, messageID int) CopyMessageConfig {
 	return CopyMessageConfig{
-		BaseChat:   BaseChat{ChatID: chatID},
-		FromChatID: fromChatID,
-		MessageID:  messageID,
+		BaseChat: BaseChat{ChatID: chatID},
+		FromChat: ChatConfig{
+			ChatID: fromChatID,
+		},
+		MessageID: messageID,
 	}
 }
 

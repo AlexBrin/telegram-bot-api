@@ -347,6 +347,7 @@ var (
 	_ Chattable = VideoNoteConfig{}
 	_ Chattable = VoiceConfig{}
 	_ Chattable = WebhookConfig{}
+	_ Chattable = RefundStarPaymentConfig{}
 )
 
 // Ensure all Fileable types are correct.

@@ -274,6 +274,7 @@ type BaseChat struct {
 	ReplyToMessageID         int
 	ReplyMarkup              interface{}
 	DisableNotification      bool
+	MessageEffectID          string // for private chats only
 	AllowSendingWithoutReply bool
 	IsTopicMessage           bool
 }
@@ -288,6 +289,7 @@ func (chat *BaseChat) params() (Params, error) {
 	params.AddBool("allow_sending_without_reply", chat.AllowSendingWithoutReply)
 	params.AddBool("protect_content", chat.ProtectContent)
 	params.AddBool("is_topic_message", chat.IsTopicMessage)
+	params.AddNonEmpty("message_effect_id", chat.MessageEffectID)
 
 	err := params.AddInterface("reply_markup", chat.ReplyMarkup)
 
@@ -382,12 +384,12 @@ func (config ForwardConfig) method() string {
 // CopyMessageConfig contains information about a copyMessage request.
 type CopyMessageConfig struct {
 	BaseChat
-	FromChatID          int64
-	FromChannelUsername string
-	MessageID           int
-	Caption             string
-	ParseMode           string
-	CaptionEntities     []MessageEntity
+	FromChat              ChatConfig
+	MessageID             int
+	Caption               string
+	ParseMode             string
+	CaptionEntities       []MessageEntity
+	ShowCaptionAboveMedia bool
 }
 
 func (config CopyMessageConfig) params() (Params, error) {
@@ -396,10 +398,15 @@ func (config CopyMessageConfig) params() (Params, error) {
 		return params, err
 	}
 
-	params.AddFirstValid("from_chat_id", config.FromChatID, config.FromChannelUsername)
+	p1, err := config.FromChat.paramsWithKey("from_chat_id")
+	if err != nil {
+		return params, err
+	}
+	params.Merge(p1)
 	params.AddNonZero("message_id", config.MessageID)
 	params.AddNonEmpty("caption", config.Caption)
 	params.AddNonEmpty("parse_mode", config.ParseMode)
+	params.AddBool("show_caption_above_media", config.ShowCaptionAboveMedia)
 	err = params.AddInterface("caption_entities", config.CaptionEntities)
 
 	return params, err
@@ -412,10 +419,11 @@ func (config CopyMessageConfig) method() string {
 // PhotoConfig contains information about a SendPhoto request.
 type PhotoConfig struct {
 	BaseFile
-	Thumb           RequestFileData
-	Caption         string
-	ParseMode       string
-	CaptionEntities []MessageEntity
+	Thumb                 RequestFileData
+	Caption               string
+	ParseMode             string
+	CaptionEntities       []MessageEntity
+	ShowCaptionAboveMedia bool
 }
 
 func (config PhotoConfig) params() (Params, error) {
@@ -426,6 +434,7 @@ func (config PhotoConfig) params() (Params, error) {
 
 	params.AddNonEmpty("caption", config.Caption)
 	params.AddNonEmpty("parse_mode", config.ParseMode)
+	params.AddBool("show_caption_above_media", config.ShowCaptionAboveMedia)
 	err = params.AddInterface("caption_entities", config.CaptionEntities)
 
 	return params, err
@@ -562,12 +571,13 @@ func (config StickerConfig) files() []RequestFile {
 // VideoConfig contains information about a SendVideo request.
 type VideoConfig struct {
 	BaseFile
-	Thumb             RequestFileData
-	Duration          int
-	Caption           string
-	ParseMode         string
-	CaptionEntities   []MessageEntity
-	SupportsStreaming bool
+	Thumb                 RequestFileData
+	Duration              int
+	Caption               string
+	ParseMode             string
+	CaptionEntities       []MessageEntity
+	ShowCaptionAboveMedia bool
+	SupportsStreaming     bool
 }
 
 func (config VideoConfig) params() (Params, error) {
@@ -580,6 +590,7 @@ func (config VideoConfig) params() (Params, error) {
 	params.AddNonEmpty("caption", config.Caption)
 	params.AddNonEmpty("parse_mode", config.ParseMode)
 	params.AddBool("supports_streaming", config.SupportsStreaming)
+	params.AddBool("show_caption_above_media", config.ShowCaptionAboveMedia)
 	err = params.AddInterface("caption_entities", config.CaptionEntities)
 
 	return params, err
@@ -608,11 +619,12 @@ func (config VideoConfig) files() []RequestFile {
 // AnimationConfig contains information about a SendAnimation request.
 type AnimationConfig struct {
 	BaseFile
-	Duration        int
-	Thumb           RequestFileData
-	Caption         string
-	ParseMode       string
-	CaptionEntities []MessageEntity
+	Duration              int
+	Thumb                 RequestFileData
+	Caption               string
+	ParseMode             string
+	CaptionEntities       []MessageEntity
+	ShowCaptionAboveMedia bool
 }
 
 func (config AnimationConfig) params() (Params, error) {
@@ -624,6 +636,7 @@ func (config AnimationConfig) params() (Params, error) {
 	params.AddNonZero("duration", config.Duration)
 	params.AddNonEmpty("caption", config.Caption)
 	params.AddNonEmpty("parse_mode", config.ParseMode)
+	params.AddBool("show_caption_above_media", config.ShowCaptionAboveMedia)
 	err = params.AddInterface("caption_entities", config.CaptionEntities)
 
 	return params, err
@@ -1026,9 +1039,10 @@ func (config EditMessageTextConfig) method() string {
 // EditMessageCaptionConfig allows you to modify the caption of a message.
 type EditMessageCaptionConfig struct {
 	BaseEdit
-	Caption         string
-	ParseMode       string
-	CaptionEntities []MessageEntity
+	Caption               string
+	ParseMode             string
+	CaptionEntities       []MessageEntity
+	ShowCaptionAboveMedia bool
 }
 
 func (config EditMessageCaptionConfig) params() (Params, error) {
@@ -1039,6 +1053,7 @@ func (config EditMessageCaptionConfig) params() (Params, error) {
 
 	params["caption"] = config.Caption
 	params.AddNonEmpty("parse_mode", config.ParseMode)
+	params.AddBool("show_caption_above_media", config.ShowCaptionAboveMedia)
 	err = params.AddInterface("caption_entities", config.CaptionEntities)
 
 	return params, err
@@ -1489,6 +1504,7 @@ func (config UnbanChatSenderChatConfig) params() (Params, error) {
 // ChatConfig contains information about getting information on a chat.
 type ChatConfig struct {
 	ChatID             int64
+	ChannelUsername    string
 	SuperGroupUsername string
 }
 
@@ -1498,6 +1514,11 @@ func (config ChatConfig) params() (Params, error) {
 	params.AddFirstValid("chat_id", config.ChatID, config.SuperGroupUsername)
 
 	return params, nil
+}
+
+func (base ChatConfig) paramsWithKey(key string) (Params, error) {
+	params := make(Params)
+	return params, params.AddFirstValid(key, base.ChatID, base.ChannelUsername, base.SuperGroupUsername)
 }
 
 // ChatInfoConfig contains information about getting chat information.
@@ -1762,12 +1783,12 @@ func (config InvoiceConfig) params() (Params, error) {
 	params["title"] = config.Title
 	params["description"] = config.Description
 	params["payload"] = config.Payload
-	params["provider_token"] = config.ProviderToken
 	params["currency"] = config.Currency
 	if err = params.AddInterface("prices", config.Prices); err != nil {
 		return params, err
 	}
 
+	params.AddNonEmpty("provider_token", config.ProviderToken)
 	params.AddNonZero("max_tip_amount", config.MaxTipAmount)
 	err = params.AddInterface("suggested_tip_amounts", config.SuggestedTipAmounts)
 	params.AddNonEmpty("start_parameter", config.StartParameter)
@@ -2416,6 +2437,26 @@ func (config GetMyDefaultAdministratorRightsConfig) params() (Params, error) {
 	params := make(Params)
 
 	params.AddBool("for_channels", config.ForChannels)
+
+	return params, nil
+}
+
+// RefundStarPaymentConfig refunds a successful payment in Telegram Stars.
+// Returns True on success.
+type RefundStarPaymentConfig struct {
+	UserID                  int64  //required
+	TelegramPaymentChargeID string //required
+}
+
+func (config RefundStarPaymentConfig) method() string {
+	return "refundStarPayment"
+}
+
+func (config RefundStarPaymentConfig) params() (Params, error) {
+	params := make(Params)
+
+	params["telegram_payment_charge_id"] = config.TelegramPaymentChargeID
+	params.AddNonZero64("user_id", config.UserID)
 
 	return params, nil
 }

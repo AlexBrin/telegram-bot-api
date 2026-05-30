@@ -1475,6 +1475,19 @@ type InlineKeyboardButton struct {
 	//
 	// optional
 	Pay bool `json:"pay,omitempty"`
+	// Style of the button
+	// Must be one of "danger" (red), "success" (green) or "primary" (blue).
+	//
+	// optional
+	Style *string `json:"style,omitempty"`
+	// IconCustomEmojiID Unique identifier of the custom emoji shown before the text of the button
+	//
+	// NOTE: Can only be used by bots that purchased additional usernames on Fragment or
+	// in the messages directly sent by the bot to private, group and supergroup chats
+	// if the owner of the bot has a Telegram Premium subscription
+	//
+	// optional
+	IconCustomEmojiID *string `json:"icon_custom_emoji_id,omitempty"`
 }
 
 // LoginURL represents a parameter of the inline keyboard button used to
